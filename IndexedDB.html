@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Indexed DB</title>
+</head>
+<body>
+	<script type="text/javascript"src = "IDBUTIL_SRINI.js"></script>
+	<script type="text/javascript">
+
+		var databaseDetails = {
+			"name": "library",
+			"version": 1,
+			"tableDetails":[
+				{ tableName: "books", 
+				  autoIncrement: false, 
+				  keyPath: "isbn",
+				  index:[{
+				  	indexName: "by_title",
+			  		columnName: "title",
+			  		unique: true
+				  },
+				  {
+				  	indexName:"by_author",
+				  	columnName: "author",
+				  }		]
+				}			]
+		};
+		var dbUtil = indexedDbUtil;
+		dbUtil.setDBDetails(databaseDetails)
+				.openDatabase()
+				.put( "books",[
+								{title: "Quarry Memories", author: "Fred", isbn: 123456},
+								{title: "Water Buffaloes", author: "Fred", isbn: 234567}
+							  ], databaseDetails.name)
+				.oncomplete(function(result){
+				   	console.log(JSON.stringify(result));
+				   });
+		dbUtil.get("books", [123456, 234567], databaseDetails.name)
+			  .oncomplete(function(result){
+				   	console.log(JSON.stringify(result));
+				});
+		var getFunction = function(){
+			var isbn = document.getElementById('isbn').value,
+				resultelem = document.getElementById("result");
+				isbn = parseInt(isbn);
+			dbUtil.get("books", [isbn], databaseDetails.name)
+			  .oncomplete(function(result){
+				   	resultelem.innerHTML = JSON.stringify(result);
+				});
+		};
+		var putFunction = function(){
+			var title = document.getElementById('title').value,
+				author = document.getElementById('author').value,
+				isbn = document.getElementById('isbn').value,
+				result = document.getElementById("result");
+				isbn = parseInt(isbn);
+				dbUtil.put("books",[{"title": title, "author": author, "isbn": isbn}], databaseDetails.name)
+					  .oncomplete(function(){
+					  	result.innerHTML = "inserted successfully";
+					  });
+		};
+	</script>
+	<center>
+		<input type="text" name="title" id = "title" placeholder="title" />&nbsp;
+		<input type="text" name="author" id = "author" placeholder="author" />&nbsp;
+		<input type="text" name="isbn" id = "isbn" placeholder="isbn" />
+		<br>
+		<button onclick="getFunction()">get</button> &nbsp;
+		<button onclick="putFunction()">put</button> &nbsp;
+		<div id="result" ></div>
+		<!-- <button onclick="getAllFunction()">get all</button> -->
+	</center>
+</body>
+</html>
