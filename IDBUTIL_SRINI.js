@@ -1,7 +1,7 @@
 /*
 $ Author: Srinivass B.E
 All copy rights belongs to the Srinivass B.E
-Input Details:
+Input Details:         
 JSON Which has the following details
 name: database Name
 Version: Version number of the Database
